@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\muhammed\\Desktop\\sporsalonu\\sporsalonu\\sporsalonu\\sporsalonu\\FitnessCenterApp.csproj": {}
+    "C:\\Users\\muhammed elhaci\\Desktop\\WebProject\\sporsalonu\\FitnessCenterApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\muhammed\\Desktop\\sporsalonu\\sporsalonu\\sporsalonu\\sporsalonu\\FitnessCenterApp.csproj": {
+    "C:\\Users\\muhammed elhaci\\Desktop\\WebProject\\sporsalonu\\FitnessCenterApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\muhammed\\Desktop\\sporsalonu\\sporsalonu\\sporsalonu\\sporsalonu\\FitnessCenterApp.csproj",
+        "projectUniqueName": "C:\\Users\\muhammed elhaci\\Desktop\\WebProject\\sporsalonu\\FitnessCenterApp.csproj",
         "projectName": "FitnessCenterApp",
-        "projectPath": "C:\\Users\\muhammed\\Desktop\\sporsalonu\\sporsalonu\\sporsalonu\\sporsalonu\\FitnessCenterApp.csproj",
-        "packagesPath": "C:\\Users\\muhammed\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\muhammed\\Desktop\\sporsalonu\\sporsalonu\\sporsalonu\\sporsalonu\\obj\\",
+        "projectPath": "C:\\Users\\muhammed elhaci\\Desktop\\WebProject\\sporsalonu\\FitnessCenterApp.csproj",
+        "packagesPath": "C:\\Users\\muhammed elhaci\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\muhammed elhaci\\Desktop\\WebProject\\sporsalonu\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\muhammed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\muhammed elhaci\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -90,6 +90,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -98,7 +116,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
         }
       }
     }
