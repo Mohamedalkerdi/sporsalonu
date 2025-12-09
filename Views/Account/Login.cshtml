@@ -1,0 +1,48 @@
+﻿@model FitnessCenterApp.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="fas fa-dumbbell" style="font-size: 3rem; color: var(--primary-color);"></i>
+            </div>
+            <h2 class="auth-title">Hoş Geldiniz</h2>
+            <p class="auth-subtitle">Hesabınıza giriş yapın</p>
+        </div>
+
+        <form asp-action="Login" asp-route-returnUrl="@(ViewData["ReturnUrl"] ?? string.Empty)" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control form-control-lg" placeholder="E-posta adresinizi girin" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label">Şifre</label>
+                <input asp-for="Password" class="form-control form-control-lg" type="password" placeholder="Şifrenizi Girin" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-4">
+                <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe" />
+                <label class="form-check-label" for="rememberMe">Beni Hatırla</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-muted mb-0">Hesabınız yok mu? 
+                <a href="@Url.Action("Register", "Account")" style="color: var(--primary-color); font-weight: 600;">Üye Olun</a>
+            </p>
+        </div>
+    </div>
+</div>

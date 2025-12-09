@@ -1,0 +1,73 @@
+@model IEnumerable<FitnessCenterApp.Models.TrainerAvailability>
+
+@{
+    ViewData["Title"] = "Müsaitlik Saatleri";
+    var trainerId = ViewBag.TrainerId;
+    var trainerName = ViewBag.TrainerName;
+}
+
+<h2>@trainerName - Müsaitlik Saatleri</h2>
+<hr />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<p>
+    <a asp-action="AddAvailability" asp-route-trainerId="@trainerId" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Müsaitlik Saati Ekle
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Dön
+    </a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Gün</th>
+            <th>Başlangıç Saati</th>
+            <th>Bitiş Saati</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderBy(a => a.DayOfWeek))
+        {
+            <tr>
+                <td>@GetDayName(item.DayOfWeek)</td>
+                <td>@item.StartTime.ToString(@"hh\:mm")</td>
+                <td>@item.EndTime.ToString(@"hh\:mm")</td>
+                <td>
+                    <a asp-action="DeleteAvailability" asp-route-id="@item.TrainerAvailabilityId" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Bu müsaitlik saatini silmek istediğinizden emin misiniz?');">
+                        <i class="fas fa-trash"></i> Sil
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@functions {
+    string GetDayName(DayOfWeek day)
+    {
+        return day switch
+        {
+            DayOfWeek.Monday => "Pazartesi",
+            DayOfWeek.Tuesday => "Salı",
+            DayOfWeek.Wednesday => "Çarşamba",
+            DayOfWeek.Thursday => "Perşembe",
+            DayOfWeek.Friday => "Cuma",
+            DayOfWeek.Saturday => "Cumartesi",
+            DayOfWeek.Sunday => "Pazar",
+            _ => day.ToString()
+        };
+    }
+}
+

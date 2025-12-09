@@ -1,0 +1,296 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Text.Json.Nodes;
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
+
+namespace FitnessCenterApp.Controllers
+{
+    [Authorize]
+    public class AIController : Controller
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
+
+        public AIController(IWebHostEnvironment environment, IConfiguration configuration)
+        {
+            _httpClient = new HttpClient();
+            _environment = environment;
+            _configuration = configuration;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string description, IFormFile? photo, 
+            double? height, double? weight, string? bodyType, string? goal)
+        {
+            string apiKey = _configuration["AI:ApiKey"];
+            bool hasApiKey = !string.IsNullOrWhiteSpace(apiKey);
+            string url = hasApiKey ? $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}" : string.Empty;
+
+            // Prepare request variables
+            var parts = new List<object>();
+            string prompt = string.Empty;
+
+            // if a photo was uploaded - validate type & size
+            if (photo != null && photo.Length > 0)
+            {
+                // limit to 2 MB
+                const long maxImageBytes = 2_000_000;
+                if (photo.Length > maxImageBytes)
+                {
+                    ViewBag.Error = "Fotoğraf 2 MB'den küçük olmalıdır.";
+                    return View();
+                }
+
+                var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowed.Contains(photo.ContentType))
+                {
+                    ViewBag.Error = "Desteklenmeyen dosya türü. (jpg, png, webp)";
+                    return View();
+                }
+
+                // proceed to read and base64-convert safely...
+                using (var memoryStream = new MemoryStream())
+                {
+                    await photo.CopyToAsync(memoryStream);
+                    var imageBytes = memoryStream.ToArray();
+                    var base64Image = Convert.ToBase64String(imageBytes);
+                    var mimeType = photo.ContentType;
+
+                    parts.Add(new
+                    {
+                        inline_data = new
+                        {
+                            mime_type = mimeType,
+                            data = base64Image
+                        }
+                    });
+
+                    prompt = $"Bu fotoğrafa bakarak, kullanıcıya uygun egzersiz ve diyet planı önerin. ";
+                    if (!string.IsNullOrEmpty(goal))
+                        prompt += $"Hedef: {goal}. ";
+                    if (height.HasValue && weight.HasValue)
+                        prompt += $"Boy: {height} cm, Kilo: {weight} kg. ";
+                    prompt += "Detaylı bir egzersiz programı ve beslenme önerileri sunun. Hangi egzersizleri yaparsa nasıl görüneceği hakkında bilgi verin.";
+                }
+            }
+            // Vücut ölçüleri ile öneri
+            else if (height.HasValue && weight.HasValue)
+            {
+                var bmi = weight.Value / Math.Pow(height.Value / 100, 2);
+                prompt = $"Kullanıcı bilgileri:\n";
+                prompt += $"Boy: {height} cm\n";
+                prompt += $"Kilo: {weight} kg\n";
+                prompt += $"Vücut Kitle Endeksi (BMI): {bmi:F2}\n";
+                if (!string.IsNullOrEmpty(bodyType))
+                    prompt += $"Vücut Tipi: {bodyType}\n";
+                if (!string.IsNullOrEmpty(goal))
+                    prompt += $"Hedef: {goal}\n";
+                prompt += $"\nBu bilgilere göre kişiselleştirilmiş bir egzersiz programı ve diyet planı önerin. Hangi egzersizleri yaparsa nasıl görüneceği hakkında detaylı bilgi verin. Programı haftalık olarak planlayın ve her gün için farklı egzersizler önerin.";
+            }
+            // Metin açıklama ile öneri
+            else if (!string.IsNullOrEmpty(description))
+            {
+                prompt = $"Kullanıcı, '{description}' tarzında bir egzersiz programı veya hedef istiyor. Ona uygun birkaç farklı egzersiz programı önerin, açıklamalarını yapın ve bu programları takip ederse nasıl görüneceği hakkında bilgi verin.";
+            }
+            else
+            {
+                ViewBag.Error = "Lütfen bir fotoğraf yükleyin, vücut ölçülerinizi girin veya hedefinizi açıklayın.";
+                return View();
+            }
+
+            parts.Add(new { text = prompt });
+
+            // If there is no API key configured, use a local mock AI response so the feature works offline.
+            if (!hasApiKey)
+            {
+                var suggestionsText = GenerateMockSuggestions(prompt, photo != null, height, weight, bodyType, goal, description);
+                string[] aiList = suggestionsText.Split(new[] { "\n\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToArray();
+
+                ViewBag.SuggestionsList = aiList;
+                ViewBag.HasPhoto = photo != null;
+
+                if (height.HasValue && weight.HasValue)
+                {
+                    ViewBag.BMI = weight.Value / Math.Pow(height.Value / 100, 2);
+                    ViewBag.Height = height.Value;
+                    ViewBag.Weight = weight.Value;
+                }
+
+                return View();
+            }
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                    new
+                    {
+                        parts = parts
+                    }
+                }
+            };
+
+            var jsonRequest = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            try
+            {
+                // API isteğini gönder
+                var response = await _httpClient.PostAsync(url, content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ViewBag.Error = $"API isteği başarısız oldu: {response.StatusCode}. Detay: {errorContent}";
+                    return View();
+                }
+
+                // API yanıtını al ve deserialize et
+                var result = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonNode.Parse(result);
+
+                string suggestionsText = jsonResponse?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString() ?? "Öneriler alınamadı.";
+
+                // Yanıtı paragraf halinde ayır
+                string[] aiList = suggestionsText.Split(new[] { "\n\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToArray();
+
+                ViewBag.SuggestionsList = aiList;
+                ViewBag.HasPhoto = photo != null;
+
+                if (height.HasValue && weight.HasValue)
+                {
+                    ViewBag.BMI = weight.Value / Math.Pow(height.Value / 100, 2);
+                    ViewBag.Height = height.Value;
+                    ViewBag.Weight = weight.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
+            }
+
+            return View();
+        }
+
+        // Egzersiz önerileri için ayrı bir endpoint
+        [HttpPost]
+        public async Task<IActionResult> GetExerciseRecommendation(string goal, double? height, double? weight, string? bodyType)
+        {
+            string apiKey = _configuration["AI:ApiKey"];
+            bool hasApiKey = !string.IsNullOrWhiteSpace(apiKey);
+            string url = hasApiKey ? $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}" : string.Empty;
+
+            var prompt = $"Aşağıdaki bilgilere göre kişiselleştirilmiş egzersiz önerileri sun:\n";
+            if (height.HasValue && weight.HasValue)
+                prompt += $"Boy: {height} cm, Kilo: {weight} kg\n";
+            if (!string.IsNullOrEmpty(bodyType))
+                prompt += $"Vücut Tipi: {bodyType}\n";
+            if (!string.IsNullOrEmpty(goal))
+                prompt += $"Hedef: {goal}\n";
+            prompt += "\nDetaylı haftalık egzersiz programı, set ve tekrar sayıları, beslenme önerileri ve beklenen sonuçlar hakkında bilgi ver.";
+
+            if (!hasApiKey)
+            {
+                var suggestionsText = GenerateMockSuggestions(prompt, false, height, weight, bodyType, goal, null);
+                return Ok(new { recommendations = suggestionsText });
+            }
+
+            var requestBody = new
+            {
+                contents = new[]
+                   {
+                    new
+                    {
+                        parts = new[]
+                        {
+                            new { text = prompt }
+                        }
+                    }
+                }
+            };
+
+            var jsonRequest = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest(new { error = "API isteği başarısız oldu." });
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JsonNode.Parse(result);
+
+            string suggestionsText = jsonResponse?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString() ?? "Öneriler alınamadı.";
+
+            return Ok(new { recommendations = suggestionsText });
+        }
+
+        // Simple local mock generator used when no API key is configured. Keeps the feature usable offline.
+        private string GenerateMockSuggestions(string prompt, bool hasPhoto, double? height, double? weight, string? bodyType, string? goal, string? description)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Genel Öneriler:");
+            if (height.HasValue && weight.HasValue)
+            {
+                var bmi = weight.Value / Math.Pow(height.Value / 100, 2);
+                sb.AppendLine($"- Boy: {height} cm, Kilo: {weight} kg, BMI: {bmi:F2}");
+            }
+            if (!string.IsNullOrEmpty(goal)) sb.AppendLine($"- Hedef: {goal}");
+            if (!string.IsNullOrEmpty(bodyType)) sb.AppendLine($"- Vücut Tipi: {bodyType}");
+            if (!string.IsNullOrEmpty(description)) sb.AppendLine($"- Açıklama: {description}");
+
+            sb.AppendLine();
+            sb.AppendLine("Haftalık Örnek Program:");
+            sb.AppendLine("Pazartesi: Göğüs 4 set x 8-12 tekrar, 20 dk hafif kardiyo");
+            sb.AppendLine("Salı: Sırt 4 set x 8-12 tekrar, sırt egzersizleri ve 10 dk core");
+            sb.AppendLine("Çarşamba: Dinlenme veya hafif esneme (30 dk)");
+            sb.AppendLine("Perşembe: Bacak 4 set x 8-12 tekrar, squats, lunges");
+            sb.AppendLine("Cuma: Omuz + Karın, 3 set x 10-15 tekrar");
+            sb.AppendLine("Cumartesi: Kardiyo 30-40 dk veya HIIT");
+            sb.AppendLine("Pazar: Aktif dinlenme / esneme");
+
+            sb.AppendLine();
+            sb.AppendLine("Beslenme Önerisi:");
+            if (!string.IsNullOrEmpty(goal) && goal.Contains("Kilo Verme"))
+            {
+                sb.AppendLine("- Günlük kalori açığı oluşturun, protein ağırlıklı beslenin, işlenmiş gıdalardan kaçının.");
+            }
+            else if (!string.IsNullOrEmpty(goal) && (goal.Contains("Kilo Alma") || goal.Contains("Kas")))
+            {
+                sb.AppendLine("- Kalori fazlası hedefleyin, yeterli miktarda protein ve kompleks karbonhidrat tüketin.");
+            }
+            else
+            {
+                sb.AppendLine("- Dengeli beslenme: protein, sağlıklı yağlar, kompleks karbonhidratlar ve yeterli su tüketimi.");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Not: Bu öneriler lokal mock verisidir. Gerçek yapay zeka önerileri için bir AI API anahtarı yapılandırın.");
+
+            return sb.ToString();
+        }
+    }
+}

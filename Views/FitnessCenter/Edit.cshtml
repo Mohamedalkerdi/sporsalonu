@@ -1,0 +1,67 @@
+@model FitnessCenterApp.Models.FitnessCenter
+
+@{
+    ViewData["Title"] = "Spor Salonu Düzenle";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-5 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-edit me-2" style="color: var(--primary-color);"></i>Spor Salonu Düzenle
+        </h1>
+        <p class="lead text-muted">Spor salonu bilgilerini güncelleyin</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background: var(--gradient-primary); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Spor Salonu Bilgileri</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="FitnessCenterId" />
+                        
+                        <div class="form-group mb-4">
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="fas fa-tag me-2"></i>Spor Salonu Adı
+                            </label>
+                            <input asp-for="Name" class="form-control form-control-lg" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Address" class="form-label fw-semibold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Adres
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Phone" class="form-label fw-semibold">
+                                <i class="fas fa-phone me-2"></i>Telefon
+                            </label>
+                            <input asp-for="Phone" class="form-control form-control-lg" type="tel" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="fas fa-save me-2"></i>Güncelle
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,99 @@
+@model FitnessCenterApp.Models.Service
+
+@{
+    ViewData["Title"] = "Yeni Hizmet Ekle";
+    var fitnessCenters = ViewBag.FitnessCenters as SelectList;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-5 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-list me-2" style="color: var(--primary-color);"></i>Yeni Hizmet Ekle
+        </h1>
+        <p class="lead text-muted">Yeni bir hizmet ekleyin</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background: var(--gradient-primary); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Hizmet Bilgileri</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <div class="form-group mb-4">
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="fas fa-tag me-2"></i>Hizmet Adı
+                            </label>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Örn: Fitness, Yoga, Pilates" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="ServiceType" class="form-label fw-semibold">
+                                <i class="fas fa-list-alt me-2"></i>Hizmet Türü
+                            </label>
+                            <select asp-for="ServiceType" class="form-select form-select-lg">
+                                <option value="">Seçiniz</option>
+                                <option value="Fitness">Fitness</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="Pilates">Pilates</option>
+                                <option value="Kardiyovasküler">Kardiyovasküler</option>
+                                <option value="Kuvvet Antrenmanı">Kuvvet Antrenmanı</option>
+                                <option value="Esneklik">Esneklik</option>
+                                <option value="Kişisel Antrenman">Kişisel Antrenman</option>
+                            </select>
+                            <span asp-validation-for="ServiceType" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="Duration" class="form-label fw-semibold">
+                                        <i class="fas fa-clock me-2"></i>Süre (dakika)
+                                    </label>
+                                    <input asp-for="Duration" class="form-control form-control-lg" type="number" min="15" max="180" step="15" />
+                                    <span asp-validation-for="Duration" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="Price" class="form-label fw-semibold">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Ücret (₺)
+                                    </label>
+                                    <input asp-for="Price" class="form-control form-control-lg" type="number" min="0" step="0.01" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="FitnessCenterId" class="form-label fw-semibold">
+                                <i class="fas fa-building me-2"></i>Spor Salonu
+                            </label>
+                            <select asp-for="FitnessCenterId" class="form-select form-select-lg" asp-items="fitnessCenters">
+                                <option value="">Seçiniz (Opsiyonel)</option>
+                            </select>
+                            <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="fas fa-save me-2"></i>Kaydet
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

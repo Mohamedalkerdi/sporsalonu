@@ -1,0 +1,15 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=FitnessCenterDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+  },
+  "AI": {
+    "ApiKey": "AIzaSyBkZt4gygXJzzbuzgtJiqgH9-nk4S2zwns"
+  },
+  "AllowedHosts": "*"
+}

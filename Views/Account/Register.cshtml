@@ -1,0 +1,56 @@
+﻿@model FitnessCenterApp.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Üye Ol";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="fas fa-user-plus" style="font-size: 3rem; color: var(--primary-color);"></i>
+            </div>
+            <h2 class="auth-title">Üye Ol</h2>
+            <p class="auth-subtitle">Fitness Center ailesine katılın</p>
+        </div>
+
+        <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control form-control-lg" type="email" placeholder="E-posta Adresinizi Girin" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FullName" class="form-label">Ad Soyad</label>
+                <input asp-for="FullName" class="form-control form-control-lg" placeholder="Adınızı ve Soyadınızı Girin" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label">Şifre</label>
+                <input asp-for="Password" class="form-control form-control-lg" type="password" placeholder="Şifrenizi Girin" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Şifreyi Onayla</label>
+                <input asp-for="ConfirmPassword" class="form-control form-control-lg" type="password" placeholder="Şifrenizi Tekrar Girin" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-user-plus me-2"></i>Üye Ol
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-muted mb-0">Zaten hesabınız var mı? 
+                <a href="@Url.Action("Login", "Account")" style="color: var(--primary-color); font-weight: 600;">Giriş Yapın</a>
+            </p>
+        </div>
+    </div>
+</div>

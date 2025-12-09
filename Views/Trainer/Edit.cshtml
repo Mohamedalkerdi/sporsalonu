@@ -1,0 +1,52 @@
+@model FitnessCenterApp.Models.Trainer
+
+@{
+    ViewData["Title"] = "Antrenör Düzenle";
+    var fitnessCenters = ViewBag.FitnessCenters as SelectList;
+}
+
+<h2>Antrenör Düzenle</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TrainerId" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Expertise" class="control-label"></label>
+                <input asp-for="Expertise" class="form-control" placeholder="Örn: Kas Geliştirme, Kilo Verme, Yoga" />
+                <span asp-validation-for="Expertise" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FitnessCenterId" class="control-label">Spor Salonu</label>
+                <select asp-for="FitnessCenterId" class="form-select" asp-items="fitnessCenters">
+                    <option value="">Seçiniz (Opsiyonel)</option>
+                </select>
+                <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Güncelle
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

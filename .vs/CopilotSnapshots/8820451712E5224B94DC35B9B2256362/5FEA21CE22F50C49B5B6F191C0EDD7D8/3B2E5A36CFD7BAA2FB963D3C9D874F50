@@ -1,0 +1,164 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content fade-in-up">
+                <h1 class="hero-title">Sağlıklı Yaşam İçin<br>Yanınızdayız</h1>
+                <p class="hero-subtitle">Profesyonel antrenörlerimiz ve modern ekipmanlarımızla hedeflerinize ulaşın. Kişiselleştirilmiş antrenman programları ve AI destekli egzersiz önerileri ile fitness yolculuğunuza başlayın.</p>
+                @if (!User.Identity?.IsAuthenticated ?? true)
+                {
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="@Url.Action("Register", "Account")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Hemen Üye Ol
+                        </a>
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                        </a>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image" style="font-size: 15rem; opacity: 0.2;">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold mb-3">Neden Bizi Seçmelisiniz?</h2>
+            <p class="lead text-muted">Modern teknoloji ve uzman kadromuzla size en iyi hizmeti sunuyoruz</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Uzman Antrenörler</h4>
+                    <p class="text-muted">Alanında uzman, sertifikalı antrenörlerimizle kişiselleştirilmiş antrenman programları</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Kolay Randevu Sistemi</h4>
+                    <p class="text-muted">Online randevu sistemi ile istediğiniz zaman, istediğiniz antrenörden randevu alın</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">AI Destekli Öneriler</h4>
+                    <p class="text-muted">Yapay zeka ile kişiselleştirilmiş egzersiz ve beslenme önerileri alın</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Çeşitli Hizmetler</h4>
+                    <p class="text-muted">Fitness, Yoga, Pilates ve daha fazlası. Size uygun programı seçin</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Esnek Çalışma Saatleri</h4>
+                    <p class="text-muted">Haftanın 7 günü, size uygun saatlerde hizmet veriyoruz</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">İlerleme Takibi</h4>
+                    <p class="text-muted">Randevularınızı ve ilerlemenizi kolayca takip edin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview -->
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <div class="text-center text-white mb-5">
+                <h2 class="display-5 fw-bold mb-3">Hızlı Erişim</h2>
+                <p class="lead">İstediğiniz işleme hızlıca ulaşın</p>
+            </div>
+            
+            <div class="row g-4">
+                @if (User.IsInRole("User"))
+                {
+                    <div class="col-md-4">
+                        <a href="@Url.Action("Create", "Appointment")" class="text-decoration-none">
+                            <div class="dashboard-card text-center text-white" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                                <i class="fas fa-calendar-plus dashboard-icon text-white"></i>
+                                <h5 class="fw-bold">Randevu Al</h5>
+                                <p class="mb-0">Yeni randevu oluştur</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("MyAppointments", "Appointment")" class="text-decoration-none">
+                            <div class="dashboard-card text-center text-white" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                                <i class="fas fa-calendar-check dashboard-icon text-white"></i>
+                                <h5 class="fw-bold">Randevularım</h5>
+                                <p class="mb-0">Randevularınızı görüntüleyin</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("Index", "AI")" class="text-decoration-none">
+                            <div class="dashboard-card text-center text-white" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                                <i class="fas fa-robot dashboard-icon text-white"></i>
+                                <h5 class="fw-bold">AI Önerileri</h5>
+                                <p class="mb-0">Kişiselleştirilmiş öneriler alın</p>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<style>
+    .hero-image {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+</style>

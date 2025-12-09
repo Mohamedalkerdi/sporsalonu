@@ -1,0 +1,57 @@
+========================================
+SPOR SALONU PROJESI - CALISTIRMA KILAVUZU
+========================================
+
+EN KOLAY YOL (Visual Studio 2022):
+-----------------------------------
+1. Visual Studio 2022'yi acin
+2. File > Open > Project/Solution
+3. FitnessCenterApp.sln dosyasini secin
+4. appsettings.json dosyasini acin ve SQL Server bilgilerinizi girin
+5. Program.cs dosyasini acin ve ogrenci numaranizi girin (satir 73)
+6. Solution Explorer'da projeye sag tiklayin > Restore NuGet Packages
+7. Tools > NuGet Package Manager > Package Manager Console
+8. Console'da: dotnet ef database update
+9. F5 tusuna basin veya Debug > Start Debugging
+
+KOMUT SATIRI ILE:
+-----------------
+1. PowerShell veya Command Prompt acin
+2. Proje klasorune gidin:
+   cd C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu
+
+3. Veritabani kurulumu (ILK KEZ):
+   SETUP_DATABASE.bat dosyasina cift tiklayin
+   VEYA:
+   dotnet tool install --global dotnet-ef --version 6.0.29
+   dotnet ef database update
+
+4. Projeyi calistir:
+   RUN_PROJECT.bat dosyasina cift tiklayin
+   VEYA:
+   dotnet run
+
+GIRIS BILGILERI:
+----------------
+Admin:
+  Email: ogrencinumarasi@sakarya.edu.tr (Program.cs'de belirlediginiz)
+  Sifre: sau
+
+Uye:
+  /Account/Register sayfasindan yeni kullanici olusturabilirsiniz
+
+ONEMLI NOTLAR:
+--------------
+- SQL Server'in calistigindan emin olun
+- appsettings.json'daki connection string'i kontrol edin
+- Ilk calistirmada veritabani otomatik olusturulur
+- Port zaten kullaniliyorsa, Properties/launchSettings.json'dan degistirin
+
+SORUN GIDERME:
+--------------
+- "dotnet ef" bulunamadi: dotnet tool install --global dotnet-ef --version 6.0.29
+- SQL Server hatasi: SQL Server Management Studio ile baglantiyi test edin
+- Port hatasi: launchSettings.json'daki port numarasini degistirin
+
+========================================
+

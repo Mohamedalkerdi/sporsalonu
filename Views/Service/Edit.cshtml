@@ -1,0 +1,73 @@
+@model FitnessCenterApp.Models.Service
+
+@{
+    ViewData["Title"] = "Hizmet Düzenle";
+    var fitnessCenters = ViewBag.FitnessCenters as SelectList;
+}
+
+<h2>Hizmet Düzenle</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ServiceId" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Örn: Fitness, Yoga, Pilates" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ServiceType" class="control-label">Hizmet Türü</label>
+                <select asp-for="ServiceType" class="form-select">
+                    <option value="">Seçiniz</option>
+                    <option value="Fitness">Fitness</option>
+                    <option value="Yoga">Yoga</option>
+                    <option value="Pilates">Pilates</option>
+                    <option value="Kardiyovasküler">Kardiyovasküler</option>
+                    <option value="Kuvvet Antrenmanı">Kuvvet Antrenmanı</option>
+                    <option value="Esneklik">Esneklik</option>
+                    <option value="Kişisel Antrenman">Kişisel Antrenman</option>
+                </select>
+                <span asp-validation-for="ServiceType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Duration" class="control-label">Süre (dakika)</label>
+                <input asp-for="Duration" class="form-control" type="number" min="15" max="180" step="15" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Price" class="control-label">Ücret (₺)</label>
+                <input asp-for="Price" class="form-control" type="number" min="0" step="0.01" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FitnessCenterId" class="control-label">Spor Salonu</label>
+                <select asp-for="FitnessCenterId" class="form-select" asp-items="fitnessCenters">
+                    <option value="">Seçiniz (Opsiyonel)</option>
+                </select>
+                <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Güncelle
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

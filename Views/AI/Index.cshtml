@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Yapay Zeka Egzersiz Önerileri";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-robot me-2" style="color: var(--primary-color);"></i>AI Egzersiz ve Diyet Önerileri
+        </h1>
+        <p class="lead text-muted">Fotoğraf, vücut ölçüleri veya hedeflerinize göre kişiselleştirilmiş öneriler alın</p>
+
+        @if (ViewBag.Provider != null)
+        {
+        <div class="mt-3">
+            <span class="badge bg-secondary me-2">Provider: @ViewBag.Provider</span>
+            <span class="badge @(ViewBag.HasApiKey ? "bg-success" : "bg-danger")">API Key: @(ViewBag.HasApiKey ? "Configured" : "Missing")</span>
+        </div>
+        }
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i><strong>Hata:</strong> @ViewBag.Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI Öneri Sistemi</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="aiForm">
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-camera me-2" style="color: var(--primary-color);"></i>Seçenek 1: Fotoğraf Yükle</h5>
+                            <div class="form-group mb-3">
+                                <label for="photo" class="form-label fw-semibold">Fotoğrafınızı Yükleyin (Opsiyonel)</label>
+                                <input type="file" id="photo" name="photo" class="form-control" accept="image/*" />
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>Fotoğrafınızı yükleyerek kişiselleştirilmiş öneriler alabilirsiniz.
+                                </small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-ruler-combined me-2" style="color: var(--primary-color);"></i>Seçenek 2: Vücut Ölçüleri</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="height" class="form-label fw-semibold">Boy (cm)</label>
+                                        <input type="number" id="height" name="height" class="form-control" min="100" max="250" step="0.1" placeholder="Örn: 175" value="@ViewBag.Height" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="weight" class="form-label fw-semibold">Kilo (kg)</label>
+                                        <input type="number" id="weight" name="weight" class="form-control" min="30" max="200" step="0.1" placeholder="Örn: 75" value="@ViewBag.Weight" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="bodyType" class="form-label fw-semibold">Vücut Tipi</label>
+                                        <select id="bodyType" name="bodyType" class="form-select">
+                                            <option value="">Seçiniz (Opsiyonel)</option>
+                                            <option value="Ektomorf">Ektomorf (İnce yapılı)</option>
+                                            <option value="Mezomorf">Mezomorf (Atletik)</option>
+                                            <option value="Endomorf">Endomorf (Daha yuvarlak)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="goal" class="form-label fw-semibold">Hedef</label>
+                                        <select id="goal" name="goal" class="form-select">
+                                            <option value="">Seçiniz (Opsiyonel)</option>
+                                            <option value="Kilo Verme">Kilo Verme</option>
+                                            <option value="Kilo Alma">Kilo Alma</option>
+                                            <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                            <option value="Güç Artırma">Güç Artırma</option>
+                                            <option value="Genel Sağlık">Genel Sağlık</option>
+                                            <option value="Esneklik">Esneklik</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-comment-alt me-2" style="color: var(--primary-color);"></i>Seçenek 3: Metin Açıklama</h5>
+                            <div class="form-group mb-3">
+                                <label for="description" class="form-label fw-semibold">Hedefinizi veya İsteklerinizi Açıklayın</label>
+                                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Örn: Kilo vermek ve karın kasları geliştirmek istiyorum"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i><strong>Not:</strong> En az bir seçeneği doldurmanız gerekmektedir.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="btnSubmit">
+                            <i class="fas fa-magic me-2"></i>AI Önerileri Al
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            @if (ViewBag.SuggestionsList != null)
+            {
+            <div class="card mt-4 shadow-lg animate__animated animate__fadeIn">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>AI Önerileri</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.HasPhoto == true)
+                        {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Fotoğrafınız analiz edildi ve öneriler buna göre hazırlandı.
+                    </div>
+                        }
+
+                    @if (ViewBag.Height != null && ViewBag.Weight != null)
+                        {
+                    <div class="alert alert-info">
+                        <i class="fas fa-chart-line me-2"></i><strong>BMI:</strong> @(((double)ViewBag.BMI).ToString("F2")) (Boy: @ViewBag.Height cm, Kilo: @ViewBag.Weight kg)
+                    </div>
+                        }
+
+                    <div class="recommendations">
+                        @foreach (var suggestion in ViewBag.SuggestionsList)
+                            {
+                        <div class="alert alert-light border mb-3 p-3" style="border-left: 4px solid var(--primary-color) !important;">
+                            @Html.Raw(suggestion.Replace("\n", "<br />"))
+                        </div>
+                            }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .recommendations {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+        .recommendations::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .recommendations::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            var photo = document.getElementById('photo').files.length > 0;
+            var height = document.getElementById('height').value;
+            var weight = document.getElementById('weight').value;
+            var description = document.getElementById('description').value;
+
+            if (!photo && !height && !weight && !description) {
+                e.preventDefault();
+                alert('Lütfen en az bir seçeneği doldurun: Fotoğraf yükleyin, vücut ölçülerinizi girin veya açıklama yazın.');
+                return false;
+            }
+
+            var btn = document.getElementById('btnSubmit');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analiz Ediliyor...';
+            btn.classList.add('disabled');
+        });
+    </script>
+}

@@ -1,0 +1,248 @@
+﻿@model FitnessCenterApp.Models.Appointment
+
+@{
+    ViewData["Title"] = "Yeni Randevu Talebi";
+    var trainers = ViewBag.Trainers as SelectList;
+    var services = ViewBag.Services as SelectList;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-5 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-calendar-plus me-2" style="color: var(--primary-color);"></i>Yeni Randevu Talebi
+        </h1>
+        <p class="lead text-muted">Uygun antrenör ve hizmet seçerek randevunuzu oluşturun</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (trainers == null || !trainers.Any())
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Uyarı:</strong> Henüz antrenör bulunmamaktadır. Lütfen Admin olarak giriş yapıp önce antrenör ekleyin.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (services == null || !services.Any())
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Uyarı:</strong> Henüz hizmet bulunmamaktadır. Lütfen Admin olarak giriş yapıp önce hizmet ekleyin.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background: var(--gradient-primary); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Randevu Bilgileri</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="TrainerId" class="form-label fw-semibold">
+                                <i class="fas fa-user-tie me-2"></i>Antrenör
+                            </label>
+                            <select asp-for="TrainerId" class="form-select form-select-lg" asp-items="trainers" id="trainerSelect" required>
+                                <option value="">Antrenör Seçin</option>
+                            </select>
+                            <span asp-validation-for="TrainerId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="ServiceId" class="form-label fw-semibold">
+                                <i class="fas fa-list me-2"></i>Hizmet
+                            </label>
+                            <select asp-for="ServiceId" class="form-select form-select-lg" asp-items="services" id="serviceSelect" required>
+                                <option value="">Hizmet Seçin</option>
+                            </select>
+                            <span asp-validation-for="ServiceId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="AppointmentDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar me-2"></i>Randevu Tarihi
+                                    </label>
+                                    <input asp-for="AppointmentDate" class="form-control form-control-lg" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="AppointmentTime" class="form-label fw-semibold">
+                                        <i class="fas fa-clock me-2"></i>Randevu Saati
+                                    </label>
+                                    <input asp-for="AppointmentTime" class="form-control form-control-lg" type="time" list="timeSuggestions" id="timeInput" required />
+                                    <datalist id="timeSuggestions"></datalist>
+                                    <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4" id="availabilityInfoContainer" style="display:none;">
+                            <div class="alert alert-secondary mb-3" id="availabilityInfo">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Seçtiğiniz antrenörün bu gündeki uygunluk bilgileri burada görünecek.
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Notes" class="form-label fw-semibold">
+                                <i class="fas fa-sticky-note me-2"></i>Notlar (Opsiyonel)
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Özel isteklerinizi veya notlarınızı buraya yazabilirsiniz..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-money-bill-wave me-2"></i><strong>Ücret:</strong> <span id="priceDisplay">Hizmet seçildiğinde görünecek</span>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="fas fa-calendar-check me-2"></i>Randevu Talep Et
+                            </button>
+                            <a asp-action="MyAppointments" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Hizmet seçildiğinde ücreti göster
+        var services = @Html.Raw(ViewBag.ServicesJson ?? "[]");
+        
+        document.getElementById('serviceSelect').addEventListener('change', function() {
+            var selectedServiceId = parseInt(this.value);
+            var priceDisplay = document.getElementById('priceDisplay');
+            
+            if (selectedServiceId && services.length > 0) {
+                var selectedService = services.find(s => s.serviceId === selectedServiceId);
+                if (selectedService) {
+                    priceDisplay.innerHTML = '<strong style="color: var(--success-color);">' + parseFloat(selectedService.price).toFixed(2) + ' ₺</strong> (Süre: ' + selectedService.duration + ' dakika)';
+                } else {
+                    priceDisplay.textContent = 'Hizmet bilgisi bulunamadı';
+                }
+            } else {
+                priceDisplay.textContent = 'Hizmet seçildiğinde görünecek';
+            }
+        });
+
+        // Antrenör ve tarih seçildiğinde müsait saatleri getir
+        const trainerSelect = document.getElementById('trainerSelect');
+        const dateInput = document.querySelector('input[name="AppointmentDate"]');
+        const availabilityInfoContainer = document.getElementById('availabilityInfoContainer');
+        const availabilityInfo = document.getElementById('availabilityInfo');
+        const timeSuggestions = document.getElementById('timeSuggestions');
+
+        async function loadAvailability() {
+            const trainerId = parseInt(trainerSelect.value);
+            const date = dateInput.value;
+
+            timeSuggestions.innerHTML = '';
+
+            if (!trainerId || !date) {
+                availabilityInfoContainer.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/Api/Trainers/${trainerId}/AvailabilityForDate?date=${encodeURIComponent(date)}`);
+                if (!response.ok) {
+                    availabilityInfoContainer.style.display = 'none';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data || !data.availability || data.availability.length === 0) {
+                    availabilityInfo.textContent = 'Bu antrenör için bu günde tanımlı bir müsaitlik bulunmuyor.';
+                    availabilityInfoContainer.style.display = 'block';
+                    return;
+                }
+
+                // Bilgi metni
+                const rangesText = data.availability
+                    .map(a => `${a.startTime.substring(0,5)} - ${a.endTime.substring(0,5)}`)
+                    .join(', ');
+
+                const bookedTimes = (data.bookedTimes || []).map(t => t.substring(0,5));
+
+                availabilityInfo.innerHTML = `<i class="fas fa-info-circle me-2"></i>
+                    <strong>Müsaitlik:</strong> ${rangesText}
+                    ${bookedTimes.length > 0 ? `<br/><strong>Dolu Saatler:</strong> ${bookedTimes.join(', ')}` : '<br/><strong>Dolu Saat yok.</strong>'}`;
+                availabilityInfoContainer.style.display = 'block';
+
+                // Basit slot üretimi (30 dakikalık aralıklar)
+                function generateSlots(start, end, stepMinutes) {
+                    const slots = [];
+                    let current = new Date(`2000-01-01T${start}:00`);
+                    const endDate = new Date(`2000-01-01T${end}:00`);
+                    while (current <= endDate) {
+                        const hh = current.getHours().toString().padStart(2, '0');
+                        const mm = current.getMinutes().toString().padStart(2, '0');
+                        slots.push(`${hh}:${mm}`);
+                        current.setMinutes(current.getMinutes() + stepMinutes);
+                    }
+                    return slots;
+                }
+
+                let allSlots = [];
+                data.availability.forEach(a => {
+                    const start = a.startTime.substring(0,5);
+                    const end = a.endTime.substring(0,5);
+                    allSlots = allSlots.concat(generateSlots(start, end, 30));
+                });
+
+                // Tekrarlı slotları kaldır ve dolu olanları çıkart
+                const uniqueSlots = [...new Set(allSlots)]
+                    .filter(s => !bookedTimes.includes(s))
+                    .sort();
+
+                uniqueSlots.forEach(time => {
+                    const option = document.createElement('option');
+                    option.value = time;
+                    timeSuggestions.appendChild(option);
+                });
+
+            } catch (e) {
+                console.error(e);
+                availabilityInfoContainer.style.display = 'none';
+            }
+        }
+
+        trainerSelect.addEventListener('change', loadAvailability);
+        if (dateInput) {
+            dateInput.addEventListener('change', loadAvailability);
+        }
+    </script>
+}

@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Üye Paneli";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-user-circle me-2" style="color: var(--primary-color);"></i>Üye Paneli
+        </h1>
+        <p class="lead text-muted">Randevu almak, mevcut randevularınızı görüntülemek veya AI önerileri almak için aşağıdaki işlemleri gerçekleştirebilirsiniz</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Randevu Al</h4>
+                <p class="text-muted mb-4">Yeni bir randevu oluşturmak için bu bölümü kullanabilirsiniz. Uygun antrenör ve saat seçerek randevunuzu alın.</p>
+                <a href="@Url.Action("Create", "Appointment")" class="btn btn-primary">
+                    <i class="fas fa-calendar-plus me-2"></i>Randevu Al
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Randevularım</h4>
+                <p class="text-muted mb-4">Mevcut randevularınızı görüntüleyebilir, detaylarını inceleyebilir ve gerekirse iptal edebilirsiniz.</p>
+                <a href="@Url.Action("MyAppointments", "Appointment")" class="btn btn-success">
+                    <i class="fas fa-calendar-check me-2"></i>Randevularımı Gör
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h4 class="fw-bold mb-3">AI Önerileri</h4>
+                <p class="text-muted mb-4">Yapay zeka ile kişiselleştirilmiş egzersiz ve diyet önerileri alabilirsiniz. Fotoğraf veya vücut ölçülerinizi girerek öneriler alın.</p>
+                <a href="@Url.Action("Index", "AI")" class="btn btn-info">
+                    <i class="fas fa-robot me-2"></i>AI Önerileri
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card" style="background: var(--gradient-primary); color: white;">
+                <div class="card-body text-center py-4">
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Bilgilendirme</h5>
+                    <p class="mb-0">Randevularınızı zamanında iptal etmeyi unutmayın. AI önerileri için fotoğraf veya vücut ölçülerinizi girebilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

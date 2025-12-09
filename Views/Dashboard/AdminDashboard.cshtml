@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 fade-in-up">
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--text-dark);">
+            <i class="fas fa-user-shield me-2" style="color: var(--primary-color);"></i>Admin Paneli
+        </h1>
+        <p class="lead text-muted">Spor salonu yönetim sistemini kontrol edin ve tüm işlemleri gerçekleştirin</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Spor Salonu Yönetimi</h5>
+                <p class="text-muted mb-4 small">Spor salonlarını yönetebilir, ekleme, düzenleme ve silme işlemlerini gerçekleştirebilirsiniz.</p>
+                <a href="@Url.Action("Index", "FitnessCenter")" class="btn btn-primary btn-sm">
+                    <i class="fas fa-cog me-1"></i>Yönet
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Antrenör Yönetimi</h5>
+                <p class="text-muted mb-4 small">Antrenörleri ekleyebilir, düzenleyebilir ve müsaitlik saatlerini ayarlayabilirsiniz.</p>
+                <a href="@Url.Action("Index", "Trainer")" class="btn btn-success btn-sm">
+                    <i class="fas fa-cog me-1"></i>Yönet
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-list"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Hizmet Yönetimi</h5>
+                <p class="text-muted mb-4 small">Hizmetleri ekleyebilir, düzenleyebilir, süre ve ücret bilgilerini güncelleyebilirsiniz.</p>
+                <a href="@Url.Action("Index", "Service")" class="btn btn-info btn-sm">
+                    <i class="fas fa-cog me-1"></i>Yönet
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h5 class="fw-bold mb-3">Randevu Yönetimi</h5>
+                <p class="text-muted mb-4 small">Randevuları yönetebilir, onaylayabilir veya reddedebilirsiniz.</p>
+                <a href="@Url.Action("Index", "Appointment")" class="btn btn-warning btn-sm">
+                    <i class="fas fa-cog me-1"></i>Yönet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Quick Actions -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-6">
+            <div class="card" style="background: var(--gradient-primary); color: white;">
+                <div class="card-body py-4">
+                    <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>İstatistikler</h5>
+                    <p class="mb-0">Sistem istatistiklerini görüntülemek için randevu ve kullanıcı sayfalarını ziyaret edin.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" style="background: var(--gradient-dark); color: white;">
+                <div class="card-body py-4">
+                    <h5 class="mb-3"><i class="fas fa-robot me-2"></i>AI Yönetimi</h5>
+                    <p class="mb-0">AI önerileri sayfasını ziyaret ederek sistem özelliklerini test edebilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
