@@ -28,7 +28,7 @@ namespace FitnessCenterApp.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-       
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -67,11 +67,6 @@ namespace FitnessCenterApp.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginViewModel());
-        }
 
         [HttpPost]
         [AllowAnonymous]
