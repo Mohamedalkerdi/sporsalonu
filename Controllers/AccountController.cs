@@ -28,7 +28,7 @@ namespace FitnessCenterApp.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+       
         {
             if (!ModelState.IsValid)
             {
