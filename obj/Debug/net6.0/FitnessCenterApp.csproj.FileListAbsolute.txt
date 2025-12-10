@@ -79,3 +79,4 @@ C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu\obj\Debug\
 C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu\obj\Debug\net6.0\FitnessCenterApp.pdb
 C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu\obj\Debug\net6.0\FitnessCenterApp.genruntimeconfig.cache
 C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu\obj\Debug\net6.0\ref\FitnessCenterApp.dll
+C:\Users\muhammed\Desktop\sporsalonu\sporsalonu\sporsalonu\sporsalonu\obj\Debug\net6.0\FitnessCenterApp.sourcelink.json
