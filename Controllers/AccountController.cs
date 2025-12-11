@@ -67,6 +67,11 @@ namespace FitnessCenterApp.Controllers
         }
 
         [AllowAnonymous]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new LoginViewModel());
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -111,10 +116,6 @@ namespace FitnessCenterApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction(nameof(Login));
-        }
+      
     }
 }
