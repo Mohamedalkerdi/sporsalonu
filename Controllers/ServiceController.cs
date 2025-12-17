@@ -87,6 +87,7 @@ namespace FitnessCenterApp.Controllers
 
             return View(service);
         }
+
         public async Task<IActionResult> Delete(int id)
         {
             var service = await _context.Services.FindAsync(id);
