@@ -24,9 +24,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Password.RequiredUniqueChars = 1;
 
         options.User.RequireUniqueEmail = true;
+        
+        // AccessDenied sayfası için yapılandırma
+        options.SignIn.RequireConfirmedAccount = false;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+// AccessDenied sayfası için yapılandırma
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
 
 // MVC ve Razor Pages desteği ekliyoruz
 builder.Services.AddControllers();

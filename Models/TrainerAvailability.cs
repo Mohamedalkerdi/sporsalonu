@@ -6,15 +6,16 @@ namespace FitnessCenterApp.Models
     {
         public int TrainerAvailabilityId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Gün seçimi zorunludur.")]
         public DayOfWeek DayOfWeek { get; set; } // Haftanın günü
 
-        [Required]
+        [Required(ErrorMessage = "Başlangıç saati zorunludur.")]
         public TimeSpan StartTime { get; set; } // Başlangıç saati
 
-        [Required]
+        [Required(ErrorMessage = "Bitiş saati zorunludur.")]
         public TimeSpan EndTime { get; set; } // Bitiş saati
 
+        [Required(ErrorMessage = "Antrenör seçimi zorunludur.")]
         public int TrainerId { get; set; } // Müsaitliğin bağlı olduğu antrenör
         public Trainer Trainer { get; set; } = null!;
     }

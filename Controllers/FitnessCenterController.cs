@@ -17,12 +17,12 @@ namespace FitnessCenterApp.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var fitnessCenters = _context.FitnessCenters
+            var fitnessCenters = await _context.FitnessCenters
                 .Include(f => f.Trainers)
                 .Include(f => f.Services)
-                .ToList();
+                .ToListAsync();
             return View(fitnessCenters);
         }
 
@@ -33,12 +33,12 @@ namespace FitnessCenterApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(FitnessCenter fitnessCenter)
+        public async Task<IActionResult> Create(FitnessCenter fitnessCenter)
         {
             if (ModelState.IsValid)
             {
                 _context.FitnessCenters.Add(fitnessCenter);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Spor salonu başarıyla kaydedildi.";
                 return RedirectToAction(nameof(Index));
             }
@@ -46,9 +46,9 @@ namespace FitnessCenterApp.Controllers
             return View(fitnessCenter);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var fitnessCenter = _context.FitnessCenters.Find(id);
+            var fitnessCenter = await _context.FitnessCenters.FindAsync(id);
             if (fitnessCenter == null)
             {
                 return NotFound();
@@ -58,36 +58,36 @@ namespace FitnessCenterApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(FitnessCenter fitnessCenter)
+        public async Task<IActionResult> Edit(FitnessCenter fitnessCenter)
         {
             if (ModelState.IsValid)
             {
                 _context.FitnessCenters.Update(fitnessCenter);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Spor salonu başarıyla güncellendi.";
                 return RedirectToAction(nameof(Index));
             }
             return View(fitnessCenter);
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var fitnessCenter = _context.FitnessCenters.Find(id);
+            var fitnessCenter = await _context.FitnessCenters.FindAsync(id);
             if (fitnessCenter != null)
             {
                 _context.FitnessCenters.Remove(fitnessCenter);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Spor salonu başarıyla silindi.";
             }
             return RedirectToAction(nameof(Index));
         }
 
         // Çalışma saatleri yönetimi
-        public IActionResult WorkingHours(int id)
+        public async Task<IActionResult> WorkingHours(int id)
         {
-            var fitnessCenter = _context.FitnessCenters
+            var fitnessCenter = await _context.FitnessCenters
                 .Include(f => f.WorkingHours)
-                .FirstOrDefault(f => f.FitnessCenterId == id);
+                .FirstOrDefaultAsync(f => f.FitnessCenterId == id);
             
             if (fitnessCenter == null)
             {
@@ -112,12 +112,32 @@ namespace FitnessCenterApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddWorkingHours(WorkingHours workingHours)
+        public async Task<IActionResult> AddWorkingHours(WorkingHours workingHours)
         {
+            // FitnessCenterId kontrolü
+            if (workingHours.FitnessCenterId <= 0)
+            {
+                ModelState.AddModelError("FitnessCenterId", "Geçerli bir spor salonu seçilmelidir.");
+            }
+            else
+            {
+                var fitnessCenterExists = await _context.FitnessCenters.AnyAsync(f => f.FitnessCenterId == workingHours.FitnessCenterId);
+                if (!fitnessCenterExists)
+                {
+                    ModelState.AddModelError("FitnessCenterId", "Seçilen spor salonu bulunamadı.");
+                }
+            }
+
+            // Bitiş saati başlangıç saatinden sonra olmalı
+            if (workingHours.OpeningTime >= workingHours.ClosingTime)
+            {
+                ModelState.AddModelError("ClosingTime", "Kapanış saati açılış saatinden sonra olmalıdır.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.WorkingHours.Add(workingHours);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Çalışma saati başarıyla eklendi.";
                 return RedirectToAction(nameof(WorkingHours), new { id = workingHours.FitnessCenterId });
             }
@@ -130,14 +150,14 @@ namespace FitnessCenterApp.Controllers
             return View(workingHours);
         }
 
-        public IActionResult DeleteWorkingHours(int id)
+        public async Task<IActionResult> DeleteWorkingHours(int id)
         {
-            var workingHours = _context.WorkingHours.Find(id);
+            var workingHours = await _context.WorkingHours.FindAsync(id);
             if (workingHours != null)
             {
                 var fitnessCenterId = workingHours.FitnessCenterId;
                 _context.WorkingHours.Remove(workingHours);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Çalışma saati başarıyla silindi.";
                 return RedirectToAction(nameof(WorkingHours), new { id = fitnessCenterId });
             }

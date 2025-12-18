@@ -9,29 +9,38 @@
 <h2>Müsaitlik Saati Ekle</h2>
 <hr />
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="AddAvailability">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="TrainerId" value="@trainerId" />
+        <form asp-action="AddAvailability" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <input type="hidden" name="TrainerId" id="TrainerId" value="@(Model?.TrainerId > 0 ? Model.TrainerId : trainerId)" />
             
             <div class="form-group mb-3">
-                <label asp-for="DayOfWeek" class="control-label">Gün</label>
+                <label asp-for="DayOfWeek" class="control-label">Gün <span class="text-danger">*</span></label>
                 <select asp-for="DayOfWeek" class="form-select" asp-items="daysOfWeek">
-                    <option value="">Seçiniz</option>
+                    <option value="">-- Gün Seçiniz --</option>
                 </select>
                 <span asp-validation-for="DayOfWeek" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="StartTime" class="control-label">Başlangıç Saati</label>
-                <input asp-for="StartTime" class="form-control" type="time" />
+                <label asp-for="StartTime" class="control-label">Başlangıç Saati <span class="text-danger">*</span></label>
+                <input asp-for="StartTime" class="form-control" type="time" required />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="EndTime" class="control-label">Bitiş Saati</label>
-                <input asp-for="EndTime" class="form-control" type="time" />
+                <label asp-for="EndTime" class="control-label">Bitiş Saati <span class="text-danger">*</span></label>
+                <input asp-for="EndTime" class="form-control" type="time" required />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
 

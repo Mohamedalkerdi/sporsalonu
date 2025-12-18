@@ -21,6 +21,7 @@ namespace FitnessCenterApp.Controllers
         {
             var trainers = await _context.Trainers
                 .Include(t => t.FitnessCenter)
+                .Include(t => t.Appointments)
                 .ToListAsync();
             return View(trainers);
         }
@@ -100,11 +101,11 @@ namespace FitnessCenterApp.Controllers
         }
 
         // Antrenör müsaitlik saatleri yönetimi
-        public IActionResult Availability(int id)
+        public async Task<IActionResult> Availability(int id)
         {
-            var trainer = _context.Trainers
+            var trainer = await _context.Trainers
                 .Include(t => t.Availabilities)
-                .FirstOrDefault(t => t.TrainerId == id);
+                .FirstOrDefaultAsync(t => t.TrainerId == id);
 
             if (trainer == null)
             {
@@ -119,27 +120,75 @@ namespace FitnessCenterApp.Controllers
         [HttpGet]
         public IActionResult AddAvailability(int trainerId)
         {
+            // TrainerId'yi kontrol et
+            if (trainerId <= 0)
+            {
+                TempData["ErrorMessage"] = "Geçerli bir antrenör seçilmelidir.";
+                return RedirectToAction(nameof(Index));
+            }
+
             ViewBag.TrainerId = trainerId;
             ViewBag.DaysOfWeek = new SelectList(Enum.GetValues(typeof(DayOfWeek))
                 .Cast<DayOfWeek>()
                 .Select(d => new { Value = d, Text = GetDayName(d) }), "Value", "Text");
 
-            return View();
+            // Model'i TrainerId ile başlat
+            var model = new TrainerAvailability
+            {
+                TrainerId = trainerId
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddAvailability(TrainerAvailability availability)
+        public async Task<IActionResult> AddAvailability(TrainerAvailability availability)
         {
-            if (ModelState.IsValid)
+            // Trainer navigation property validation hatalarını kaldır (sadece TrainerId kullanıyoruz)
+            ModelState.Remove("Trainer");
+
+            // TrainerId'yi kontrol et
+            if (availability.TrainerId <= 0)
             {
-                _context.TrainerAvailabilities.Add(availability);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Müsaitlik saati başarıyla eklendi.";
-                return RedirectToAction(nameof(Availability), new { id = availability.TrainerId });
+                ModelState.AddModelError("TrainerId", "Geçerli bir antrenör seçilmelidir.");
+            }
+            else
+            {
+                // Trainer'ın var olup olmadığını kontrol et
+                var trainerExists = await _context.Trainers.AnyAsync(t => t.TrainerId == availability.TrainerId);
+                if (!trainerExists)
+                {
+                    ModelState.AddModelError("TrainerId", "Seçilen antrenör bulunamadı.");
+                }
             }
 
-            ViewBag.TrainerId = availability.TrainerId;
+            // Bitiş saati başlangıç saatinden sonra olmalı
+            if (availability.StartTime >= availability.EndTime)
+            {
+                ModelState.AddModelError("EndTime", "Bitiş saati başlangıç saatinden sonra olmalıdır.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Trainer navigation property'yi null yap (sadece TrainerId kullanıyoruz)
+                    availability.Trainer = null!;
+                    
+                    _context.TrainerAvailabilities.Add(availability);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Müsaitlik saati başarıyla eklendi.";
+                    return RedirectToAction(nameof(Availability), new { id = availability.TrainerId });
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Müsaitlik saati eklenirken bir hata oluştu: {ex.Message}";
+                }
+            }
+
+            // ViewBag'leri her zaman set et (validation hatası durumunda formun düzgün görünmesi için)
+            ViewBag.TrainerId = availability.TrainerId > 0 ? availability.TrainerId : (ViewBag.TrainerId ?? 0);
             ViewBag.DaysOfWeek = new SelectList(Enum.GetValues(typeof(DayOfWeek))
                 .Cast<DayOfWeek>()
                 .Select(d => new { Value = d, Text = GetDayName(d) }), "Value", "Text");
@@ -147,14 +196,14 @@ namespace FitnessCenterApp.Controllers
             return View(availability);
         }
 
-        public IActionResult DeleteAvailability(int id)
+        public async Task<IActionResult> DeleteAvailability(int id)
         {
-            var availability = _context.TrainerAvailabilities.Find(id);
+            var availability = await _context.TrainerAvailabilities.FindAsync(id);
             if (availability != null)
             {
                 var trainerId = availability.TrainerId;
                 _context.TrainerAvailabilities.Remove(availability);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Müsaitlik saati başarıyla silindi.";
                 return RedirectToAction(nameof(Availability), new { id = trainerId });
             }
